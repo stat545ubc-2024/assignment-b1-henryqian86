@@ -1,0 +1,78 @@
+---
+title: "Stat545B_B1"
+author: "Xihan Qian"
+date: "2024-11-01"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Exercise 1
+
+```{r}
+#' Summarize Numeric Data by Group
+#'
+#' Groups a data frame by specified columns and applies user-defined summary functions to numeric columns.
+#'
+#' @param data A data frame containing the data to summarize. Named `data` to
+#' emphasize the primary input and maintain clarity across different functions.
+#' @param group_cols A character vector of column names to group by. Named 
+#' `group_cols` to clearly indicate that these columns define the groups for summarization.
+#' @param summary_funs A named list of summary functions to apply to each numeric 
+#' column (e.g., `list(mean = mean, median = median)`). Named `summary_funs` to emphasize that this parameter expects
+#' functions that perform summaries.
+#' @param na.rm A logical value indicating whether to remove NA values before applying the summary functions. Defaults to 
+#' TRUE. Named `na.rm` to match common usage in R for specifying NA handling.
+#'
+#' @return A tibble with one row per group and one column per variable-summary combination.
+#'
+
+summarize_by_group <- function(data, group_cols, summary_funs = list(mean = mean, sd = sd), na.rm = TRUE) {
+  # Check if input is a data frame
+  if (!is.data.frame(data)) {
+    stop("Input 'data' must be a data frame.")
+  }
+  
+  # Ensure group columns exist in the data
+  missing_cols <- setdiff(group_cols, names(data))
+  if (length(missing_cols) > 0) {
+    stop("Group columns not found in data: ", paste(missing_cols, collapse = ", "))
+  }
+  
+  # Exclude logical columns from the summary
+  numeric_cols <- select(data, where(is.numeric))
+  
+  # Group the data and summarize with user-defined functions
+  summarized_data <- data %>%
+    group_by(across(all_of(group_cols))) %>%
+    summarize(
+      across(
+        all_of(names(numeric_cols)),
+        summary_funs,
+        .names = "{.col}_{.fn}"
+      ),
+      .groups = "drop"
+    )
+  
+  return(summarized_data)
+}
+
+```
+
+```{r}
+# Sample data
+data <- tibble(
+  group = c("A", "A", "B", "B", "C", "C"),
+  value1 = c(10, 20, 30, NA, 50, 60),
+  value2 = c(5, 3, 8, 2, 4, 7)
+)
+
+# Define custom summary functions
+summary_functions <- list(mean = mean, median = median)
+
+# Use summarize_by_group function
+summarize_by_group(data, group_cols = "group", summary_funs = summary_functions, na.rm = TRUE)
+```
+
