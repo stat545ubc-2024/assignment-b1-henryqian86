@@ -1,17 +1,11 @@
----
-title: "Stat545B_B1"
-author: "Xihan Qian"
-date: "2024-11-01"
-output: github_document
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+Stat545B_B1
+================
+Xihan Qian
+2024-11-01
 
 ## Exercise 1
 
-```{r}
+``` r
 #' Summarize Numeric Data by Group
 #'
 #' Groups a data frame by specified columns and applies user-defined summary functions to numeric columns.
@@ -30,7 +24,20 @@ knitr::opts_chunk$set(echo = TRUE)
 #'
 
 library(dplyr)
+```
 
+    ## 
+    ## Attaching package: 'dplyr'
+
+    ## The following objects are masked from 'package:stats':
+    ## 
+    ##     filter, lag
+
+    ## The following objects are masked from 'package:base':
+    ## 
+    ##     intersect, setdiff, setequal, union
+
+``` r
 summarize_by_group <- function(data, group_cols, summary_funs = list(mean = mean, sd = sd), na.rm = TRUE) {
   # Check if input is a data frame
   if (!is.data.frame(data)) {
@@ -70,16 +77,16 @@ summarize_by_group <- function(data, group_cols, summary_funs = list(mean = mean
   
   return(summarized_data)
 }
-
 ```
 
 ## Exercise 3
 
-Below are some examples demonstrating the function, with some deliberate error messages being displayed.
+Below are some examples demonstrating the function, with some deliberate
+error messages being displayed.
 
 ### Example 1
 
-```{r}
+``` r
 # Sample data
 data <- tibble(
   group = c("A", "A", "A", "B", "B", "B", "C", "C", "C"),
@@ -94,47 +101,82 @@ summary_functions <- list(mean = mean, median = median)
 summarize_by_group(data, group_cols = "group", summary_funs = summary_functions, na.rm = TRUE)
 ```
 
-Here, I use a simple data frame with one grouping column, group, and two numeric columns, value1 and value2. The data frame has three groups (A, B, and C) and includes some missing (NA) values in value1. Then I can calculate the mean and median for value1 and value2 in each group (A, B, and C). The na.rm = TRUE argument ensures that NA values are ignored in the calculations. 
+    ## # A tibble: 3 × 5
+    ##   group value1_mean value1_median value2_mean value2_median
+    ##   <chr>       <dbl>         <dbl>       <dbl>         <dbl>
+    ## 1 A            15            15          5                5
+    ## 2 B            27.5          27.5        4.67             4
+    ## 3 C            55            55          5.67             6
+
+Here, I use a simple data frame with one grouping column, group, and two
+numeric columns, value1 and value2. The data frame has three groups (A,
+B, and C) and includes some missing (NA) values in value1. Then I can
+calculate the mean and median for value1 and value2 in each group (A, B,
+and C). The na.rm = TRUE argument ensures that NA values are ignored in
+the calculations.
 
 ### Example 2
 
-
-```{r}
+``` r
 summary_functions <- list(sd = sd, min = min, max = max)
 
 # with a new set of summary functions(sd, min and max)
 summarize_by_group(data, group_cols = "group", summary_funs = summary_functions, na.rm = TRUE)
-
 ```
 
-This example demonstrates using different summary functions (standard deviation, minimum, and maximum) on the same data frame.
+    ## # A tibble: 3 × 7
+    ##   group value1_sd value1_min value1_max value2_sd value2_min value2_max
+    ##   <chr>     <dbl>      <dbl>      <dbl>     <dbl>      <dbl>      <dbl>
+    ## 1 A          5            10         20      2             3          7
+    ## 2 B          3.54         25         30      3.06          2          8
+    ## 3 C          7.07         50         60      1.53          4          7
+
+This example demonstrates using different summary functions (standard
+deviation, minimum, and maximum) on the same data frame.
 
 ### Example 3
 
-```{r, error = TRUE}
+``` r
 # Attempt to group by a non-existent column
 summarize_by_group(data, group_cols = "category", summary_funs = summary_functions, na.rm = TRUE)
-
 ```
 
-Since category is not a column in data, this will trigger an error message: "Group columns not found in data." This helps prevent accidental errors when specifying grouping columns.
+    ## Error in summarize_by_group(data, group_cols = "category", summary_funs = summary_functions, : Group columns not found in data: category
+
+Since category is not a column in data, this will trigger an error
+message: “Group columns not found in data.” This helps prevent
+accidental errors when specifying grouping columns.
 
 ### Example 4
-```{r, error = TRUE}
+
+``` r
 # Attempt to use a vector instead of a data frame
 data_vector <- c(1, 2, 3, 4, 5)
 
 # This should cause an error
 summarize_by_group(data_vector, group_cols = "group", summary_funs = list(mean = mean), na.rm = TRUE)
-
 ```
 
-The function expects data to be a data frame. Passing a vector instead will produce an error: "Input 'data' must be a data frame." This check enforces correct input types.
+    ## Error in summarize_by_group(data_vector, group_cols = "group", summary_funs = list(mean = mean), : Input 'data' must be a data frame.
+
+The function expects data to be a data frame. Passing a vector instead
+will produce an error: “Input ‘data’ must be a data frame.” This check
+enforces correct input types.
 
 ## Exercise 4
 
-```{r}
+``` r
 library(testthat)
+```
+
+    ## 
+    ## Attaching package: 'testthat'
+
+    ## The following object is masked from 'package:dplyr':
+    ## 
+    ##     matches
+
+``` r
 library(dplyr)
 
 # Define the test suite for summarize_by_group
@@ -188,19 +230,25 @@ test_that("summarize_by_group function works as expected", {
     "summary_funs must be a named list of functions"
   )
 })
-
-
 ```
 
-The tests provided for the summarize_by_group() function are to cover a range of non-redundant inputs.
+    ## Test passed 🎉
 
-Test 1 checks the basic functionality of the function using data with no missing values. This test ensures that, under standard conditions, the function performs correctly and produces expected results.
+The tests provided for the summarize_by_group() function are to cover a
+range of non-redundant inputs.
 
-Test 2 examines how the function handles NA values, using the na.rm = TRUE argument.
+Test 1 checks the basic functionality of the function using data with no
+missing values. This test ensures that, under standard conditions, the
+function performs correctly and produces expected results.
 
-Test 3 addresses input validation by intentionally providing a non-existent group column. 
+Test 2 examines how the function handles NA values, using the na.rm =
+TRUE argument.
 
-Test 4 checks that the function does not fail or produce errors and instead returns a tibble with zero rows but correctly named columns. 
+Test 3 addresses input validation by intentionally providing a
+non-existent group column.
 
-Test 5 assesses the function's ability to validate the format of summary_funs. 
+Test 4 checks that the function does not fail or produce errors and
+instead returns a tibble with zero rows but correctly named columns.
 
+Test 5 assesses the function’s ability to validate the format of
+summary_funs.
