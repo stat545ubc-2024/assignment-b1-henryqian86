@@ -6,6 +6,7 @@ This repository contains the `summarize_by_group()` function for Assignment B1.
 
 ## Contents
 - **`AssignmentB1.Rmd`**: An R Markdown file showing examples of how to use `summarize_by_group()` in different scenarios.
+- **`AssignmentB1.md`**: A knitted Markdown file from `AssignmentB1.Rmd`, containing the rendered output of the examples and explanations for easier viewing outside of RStudio.
 
 
 This repository requires the **dplyr** and **testthat** packages. 
